@@ -1,0 +1,19 @@
+### GET total de casos de covid/
+GET http://localhost:3000/vaccinations?country=BRA&date=2020-01-31
+Content-Type: application/json
+
+### GET total de pessoas vacinadas da primeira dose por data e pais
+GET http://localhost:3000/vaccinations/first_doses?country=BRA&date=2020-01-31
+Content-Type: application/json
+
+### GET quais vacinas foram usadas por paises
+GET http://localhost:3000/vaccines?country=BRA
+Content-Type: application/json
+
+### GET quais datas as vacinas foram autorizadas para uso
+GET http://localhost:3000/vaccines/authorization
+Content-Type: application/json
+
+### GET quais paises usaram a vacina específica
+GET http://localhost:3000/vaccines/Moderna/countries
+Content-Type: application/json

@@ -1,0 +1,148 @@
+openapi: 3.0.0
+info:
+  title: Neo4j COVID Vaccination API
+  version: 1.0.0
+  description: API para consultar dados de vacinação
+
+servers:
+  - url: http://localhost:3000
+    description: Servidor local de desenvolvimento
+
+paths:
+  /vaccinations:
+    get:
+      summary: Total de casos de COVID por país e data
+      parameters:
+        - name: country
+          in: query
+          description: Código do país (ISO-3)
+          required: true
+          schema:
+            type: string
+            example: BRA
+        - name: date
+          in: query
+          description: Data da consulta (YYYY-MM-DD)
+          required: true
+          schema:
+            type: string
+            format: date
+            example: 2020-01-31
+      responses:
+        '200':
+          description: Total de casos retornado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cases:
+                    type: integer
+                    example: 25000
+                  deaths:
+                    type: integer
+                    example: 6235
+
+  /vaccinations/first_doses:
+    get:
+      summary: Total de pessoas vacinadas com a primeira dose por país e data
+      parameters:
+        - name: country
+          in: query
+          required: true
+          schema:
+            type: string
+            example: BRA
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+            example: 2020-01-31
+      responses:
+        '200':
+          description: Dados de vacinação retornados com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalVaccinated:
+                    type: integer
+                    example: 15000
+
+  /vaccines:
+    get:
+      summary: Quais vacinas foram usadas por país
+      parameters:
+        - name: country
+          in: query
+          required: true
+          schema:
+            type: string
+            example: BRA
+      responses:
+        '200':
+          description: Lista de vacinas utilizadas no país
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                country:
+                  type: string
+                  example: BRA
+                vaccines:
+                  type: object
+                  properties:
+                    vaccines:
+                      type: array
+                      items:
+                        type: string
+                      example: ["Moderna", "Pfizer"]
+
+  /vaccines/authorization:
+    get:
+      summary: Datas de autorização das vacinas
+      responses:
+        '200':
+          description: Lista de vacinas com suas datas de autorização
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    vaccine_name:
+                      type: string
+                      example: Pfizer
+                    approval_date:
+                      type: string
+                      format: string
+                      example: 2020-12-11
+
+  /vaccines/{vaccine}/countries:
+    get:
+      summary: Países que usaram uma vacina específica
+      parameters:
+        - name: vaccine
+          in: path
+          required: true
+          schema:
+            type: string
+            example: Moderna
+      responses:
+        '200':
+          description: Lista de países que utilizaram a vacina informada
+          content:
+            application/json:
+              schema:
+                type: array
+                name:
+                  type: string
+                  example: Brazil
+                iso3:
+                  type: string
+                  example: BRA

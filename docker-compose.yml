@@ -1,0 +1,51 @@
+services:
+  neo4j:
+    image: neo4j
+    container_name: neo4j
+    ports:
+      - "7474:7474"  # HTTP
+      - "7687:7687"  # Bolt
+    environment:
+      - NEO4J_AUTH=neo4j/12345678
+
+  etl:
+    container_name: neo4j-etl
+    build:
+      context: ./neo4j-etl
+      dockerfile: Dockerfile
+      target: builder
+    restart: on-failure
+    environment:
+      CGO_ENABLED: "0"
+      GOOS: "linux"
+      LOGGER_LEVEL: "debug"
+      DB_HOST: "bolt://neo4j:7687"
+      DB_USER: "neo4j"
+      DB_PASSWORD: "12345678"
+      PATH_READING: "/data/path_reading/covid.csv"
+    volumes:
+      - ./neo4j-etl/data/combined_covid_vaccine_data.csv:/data/path_reading/covid.csv
+    command: go run cmd/main.go
+    depends_on:
+      - neo4j
+
+  api:
+    container_name: neo4j-api
+    build:
+      context: ./neo4j-api
+      dockerfile: Dockerfile
+      target: builder
+    restart: on-failure
+    environment:
+      HOST: "0.0.0.0:3000"
+      CGO_ENABLED: "0"
+      GOOS: "linux"
+      LOGGER_LEVEL: "debug"
+      DB_HOST: "bolt://neo4j:7687"
+      DB_USER: "neo4j"
+      DB_PASSWORD: "12345678"
+    ports:
+      - "3000:3000"
+    command: go run cmd/main.go
+    depends_on:
+      - neo4j
