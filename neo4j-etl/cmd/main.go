@@ -13,18 +13,20 @@ func main() {
 	log := newLog()
 	log.Info().Msgf("Running")
 	pathReading := os.Getenv("PATH_READING")
+	dbHost := os.Getenv("DB_HOST")
+	dbUser := os.Getenv("DB_USER")
+	dbPswd := os.Getenv("DB_PASSWORD")
 
-	database, err := neo4j.NewNeo4j("bolt://neo4j:7687", "neo4j", "12345678")
+	database, err := neo4j.NewNeo4j(dbHost, dbUser, dbPswd)
 	if err != nil {
 		log.Fatal().Msgf("error on run server %v", err)
 	}
 
 	readInit := handler.NewFileConfig(pathReading, log, database)
-	go readInit.ReadCSV()
-
-	time.Sleep(1 * time.Minute)
-
-	select {}
+	for {
+		go readInit.ReadCSV()
+		time.Sleep(5 * time.Minute)
+	}
 }
 
 func newLog() *zerolog.Logger {

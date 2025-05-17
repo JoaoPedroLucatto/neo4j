@@ -55,12 +55,12 @@ A API é responsável por receber requisições HTTP e traduzi-las em consultas 
 
 A API é documentada utilizando o padrão **OpenAPI (Swagger)**, facilitando testes e integração com outras aplicações.
 
-### Enpoint API
+### Lista de Endpoints
 
 A duas formas de testar os enpoint GET da API.
 
-- Pelo arquivo **resquest.http**
-- ou pelo arquivo **openapi.yml**
+- Pelo arquivo [request.http](request.http)
+- Ou pelo arquivo [openapi.yml](neo4j-api/docs/openapi.yml)
 
 ---
 

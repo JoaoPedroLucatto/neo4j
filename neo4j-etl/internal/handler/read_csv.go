@@ -74,6 +74,8 @@ func processCSV(reader *csv.Reader, uc *Usecase) error {
 		}
 	}
 
+	uc.Logger.Info().Msgf("Successfully loaded data")
+
 	return nil
 }
 
@@ -82,7 +84,6 @@ func processRecord(record []string, uc *Usecase) error {
 	iso3 := record[1]
 
 	dateStr := strings.TrimSpace(record[4])
-	uc.Logger.Info().Msgf("Date: %s", dateStr)
 	date, err := util.ParseDate(dateStr)
 	if err != nil {
 		uc.Logger.Err(err).Msgf("erro parse date record %v", err)
@@ -113,11 +114,30 @@ func processRecord(record []string, uc *Usecase) error {
 
 	vaccineName := record[11]
 
-	uc.Usecase.CreateCountry(countryName, iso3)
-	uc.Usecase.CreateVaccine(vaccineName, iso3)
-	uc.Usecase.CreateCovidCase(iso3, date, totalCases, totalDeaths)
-	uc.Usecase.CreateVaccinationStats(iso3, date, totalVaccinated)
-	uc.Usecase.CreateVaccineApproval(iso3, countryName, date, vaccineName)
+	_, err = uc.Usecase.CreateCountry(countryName, iso3)
+	if err != nil {
+		uc.Logger.Err(err).Msgf("Failed to create country: %s (%s)", countryName, iso3)
+	}
+
+	_, err = uc.Usecase.CreateVaccine(vaccineName, iso3)
+	if err != nil {
+		uc.Logger.Err(err).Msgf("Failed to create vaccine: %s for country %s", vaccineName, iso3)
+	}
+
+	_, err = uc.Usecase.CreateCovidCase(iso3, date, totalCases, totalDeaths)
+	if err != nil {
+		uc.Logger.Err(err).Msgf("Failed to create COVID case stats for %s on %s", iso3, date)
+	}
+
+	_, err = uc.Usecase.CreateVaccinationStats(iso3, date, totalVaccinated)
+	if err != nil {
+		uc.Logger.Err(err).Msgf("Failed to create vaccination stats for %s on %s", iso3, date)
+	}
+
+	_, err = uc.Usecase.CreateVaccineApproval(iso3, countryName, date, vaccineName)
+	if err != nil {
+		uc.Logger.Err(err).Msgf("Failed to create vaccine approval for %s in %s (%s) on %s", vaccineName, countryName, iso3, date)
+	}
 
 	return nil
 }

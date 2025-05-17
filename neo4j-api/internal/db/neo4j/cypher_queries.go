@@ -163,21 +163,8 @@ func (r *Neo4j) GetVaccineApprovalDates(vaccineName string) (*[]entity.VaccineAp
 
 		for res.Next(ctx) {
 			record := res.Record()
-			vaccineName, existVaccine := record.Get("vaccineName")
-			fmt.Printf("tem vaccineName %s\n", vaccineName)
-			fmt.Printf("O tipo de vacciName é: %T\n", vaccineName)
-			if !existVaccine {
-				fmt.Printf("tem vacina %t", existVaccine)
-			}
-
-			approvalDate, existDate := record.Get("approvalDate")
-			fmt.Printf("tem approvalDate: %+v\n", approvalDate)
-			fmt.Printf("O tipo de approvalDate é: %T\n", approvalDate)
-			if !existDate {
-				fmt.Printf("tem approvalDate %t", existDate)
-
-			}
-
+			vaccineName, _ := record.Get("vaccineName")
+			approvalDate, _ := record.Get("approvalDate")
 			approvalDateStr := approvalDate.(dbtype.Date).String()
 
 			approvals = append(approvals, entity.VaccineApprovalOutPut{
